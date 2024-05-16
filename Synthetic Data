@@ -1,0 +1,45 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Apr 27 21:18:53 2024
+
+@author: CCasas
+"""
+
+import pymc3 as pm
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Generate some synthetic data for demonstration
+np.random.seed(0)
+X = np.linspace(0, 10, 100)
+true_slope = 2
+true_intercept = 1
+Y = true_slope * X + true_intercept + np.random.normal(0, 1, 100)
+
+# Plot the synthetic data
+plt.scatter(X, Y)
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.title('Synthetic Data')
+plt.show()
+
+with pm.Model() as linear_model:
+    # Priors
+    intercept = pm.Normal('intercept', mu=0, sd=10)
+    slope = pm.Normal('slope', mu=0, sd=10)
+    
+    # Likelihood
+    sigma = pm.HalfNormal('sigma', sd=1)
+    mu = intercept + slope * X
+    likelihood = pm.Normal('Y', mu=mu, sd=sigma, observed=Y)
+
+with linear_model:
+    trace = pm.sample(2000, tune=1000)
+    
+pm.plot_posterior(trace, var_names=['intercept', 'slope', 'sigma'])
+plt.show()
+
+pm.traceplot(trace)
+plt.show()
+
+pm.summary(trace).round(2)
