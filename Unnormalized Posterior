@@ -1,0 +1,32 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Mar 9 21:56:35 2024
+
+@author: CCasas
+"""
+import scipy.stats as sts
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Define the range of mu values
+mu = np.linspace(1.65, 1.8, num=50)
+
+# Define likelihood function
+def likelihood_func(datum, mu):
+	likelihood_out = sts.norm.pdf(datum, mu, scale=0.1)
+	return likelihood_out / likelihood_out.sum()
+
+#Calculate likelihood for datum 1.7
+likelihood_out = likelihood_func(1.7, mu)
+
+# Define the uniform distribution (assuming you've defined it earlier)
+uniform_dist = np.full_like(mu, 0.020) # Assuming uniform distribution value is 0.020
+
+# Calculate unnormalized posterior
+unnormalized_posterior = likelihood_out * uniform_dist
+
+# Plot unnormalized posterior
+plt.plot(mu, unnormalized_posterior)
+plt.ylabel("$\mu$ in meters")
+plt.xlabel("Unnormalized Posterior")
+plt.show()
